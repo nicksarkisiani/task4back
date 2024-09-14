@@ -25,9 +25,10 @@ class AuthController {
             if(candidate) return res.status(400).json({error: "Candidate already exists"})
             const hashedPassword = await bcrypt.hash(password, SALT);
             const user = new User({name, email, password: hashedPassword})
+            const token = generateAccessToken(user._id, user.email)
             await user.save()
-            return res.status(200).json({message:"Registration successfully"})
-            } catch (e) {
+            return res.status(200).json({token})
+        } catch (e) {
             console.log(e)
             res.status(400).json({message: "Registration error"});
         }
