@@ -1,3 +1,4 @@
 module.exports = {
-    secret: "SECRET_KEY"
+    secret: "SECRET_KEY",
+    client_url: ""
 }

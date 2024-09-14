@@ -1,12 +1,18 @@
 const express = require('express');
 const mongoose = require("mongoose");
+const cors = require('cors')
 const authRouter = require("./authRouter");
 const userRouter = require("./userRouter");
 const PORT = 5000
+const {client_url} = require("./config");
 
 const app = express();
 
 app.use(express.json());
+app.use(cors({
+    credentials: true,
+    origin: client_url,
+}))
 app.use("/auth", authRouter);
 app.use("/user", userRouter)
 const start = async () => {
