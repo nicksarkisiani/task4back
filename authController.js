@@ -42,6 +42,8 @@ class AuthController {
             const validPassword = bcrypt.compare(password, user.password);
             if(!validPassword) return res.status(400).json({error: "Invalid Password"})
             const token = generateAccessToken(user._id, user.email)
+            user.last_updated = Date.now();
+            await user.save()
             return res.status(200).json({token})
         } catch (e) {
             console.log(e)
@@ -55,6 +57,16 @@ class AuthController {
             return res.status(200).json({users})
         } catch (e) {
 
+        }
+    }
+
+    async verifyToken(req, res) {
+        try {
+            const {token} = req.body;
+            const decodedDate = jwt.verify(token, secret);
+            return res.status(200).json(decodedDate)
+        } catch (e) {
+            res.status(400).json({message: "Invalid token"});
         }
     }
 }
