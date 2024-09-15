@@ -56,6 +56,9 @@ class AuthController {
         try {
             const {token} = req.body;
             const decodedDate = jwt.verify(token, secret);
+            const user = await User.findById(decodedDate.id)
+            if(!user) return res.status(400).json({error: "User not found"})
+            if(user.isBlocked === true) return res.status(403).json({message: "User is blocked"})
             return res.status(200).json(decodedDate)
         } catch (e) {
             res.status(400).json({message: "Invalid token"});
