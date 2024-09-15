@@ -10,6 +10,5 @@ router.post("/registration", [
 ], controller.registration)
 router.post("/login", controller.login)
 router.post("/verify", controller.verifyToken)
-router.get("/users", authMiddleware, controller.getUsers)
 
 module.exports = router

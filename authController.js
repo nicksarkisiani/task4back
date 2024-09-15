@@ -51,15 +51,6 @@ class AuthController {
         }
     }
 
-    async getUsers(req, res) {
-        try{
-            const users = await User.find()
-            return res.status(200).json({users})
-        } catch (e) {
-
-        }
-    }
-
     async verifyToken(req, res) {
         try {
             const {token} = req.body;
