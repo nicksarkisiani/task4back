@@ -41,9 +41,10 @@ class AuthController {
             if(!user) return res.status(400).json({error: "User not found"})
             const validPassword = bcrypt.compare(password, user.password);
             if(!validPassword) return res.status(400).json({error: "Invalid Password"})
-            const token = generateAccessToken(user._id, user.email)
+            if(user.isBlocked === true) return res.status(403).json({message: "User is blocked"})
             user.last_updated = Date.now();
             await user.save()
+            const token = generateAccessToken(user._id, user.email)
             return res.status(200).json({token})
         } catch (e) {
             console.log(e)
