@@ -1,19 +1,35 @@
 const User = require('./models/User');
 
-class UserController {
-    async findUser(req, res) {
-        const {userId} = req.body;
-        const user = await User.findById(userId);
+const findUserById = async (userId) => {
+    const user = await User.findById(userId);
+    if (!user) throw Error('User not found');
+    return user;
+}
 
-        if (!user) return res.status(404).json('User not found');
-        return user;
+const updateOne = async (userId, isBlocked) => {
+    try {
+        const user = await findUserById(userId)
+        user.isBlocked = isBlocked
+        await user.save()
+        return user
+    } catch (e) {
+        console.log(e)
     }
+}
+
+const deleteOne = async (userId) => {
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) throw Error('User not found');
+    return user
+}
+
+
+class UserController {
 
     async updateStatus(req, res) {
         try {
             const {userId} = req.body
-            const user = await User.findById(userId);
-            if (!user) return res.status(404).json('User not found');
+            const user = await findUserById(userId)
             user.isBlocked = !user.isBlocked
             await user.save()
             return res.status(200).json({user})
@@ -29,6 +45,39 @@ class UserController {
             return res.status(200).json({users})
         } catch (e) {
             console.log(e)
+        }
+    }
+
+    async blockMany(req, res) {
+        try {
+            const usersIdArray = req.body
+            usersIdArray.map(async (userId) => await updateOne(userId, true))
+            return res.status(200).json("Successfully blocked users");
+        } catch (e) {
+            console.log(e)
+            return res.status(400).json({message: e});
+        }
+    }
+
+    async unBlockMany(req, res) {
+        try {
+            const usersIdArray = req.body
+            usersIdArray.map(async (userId) => await updateOne(userId, false))
+            return res.status(200).json("Successfully blocked users");
+        } catch (e) {
+            console.log(e)
+            return res.status(400).json({message: e});
+        }
+    }
+
+    async deleteMany(req, res) {
+        try {
+            const usersIdArray = req.body
+            usersIdArray.map(async (userId) => await deleteOne(userId))
+            return res.status(200).json("Successfully deleted users")
+        } catch (e) {
+            console.log(e)
+            return res.status(400).json({message: e});
         }
     }
 
